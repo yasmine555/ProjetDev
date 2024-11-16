@@ -1,34 +1,52 @@
-<!-- book_list.html -->
-<form method="GET">
-    <input type="text" name="q" placeholder="Rechercher un livre" value="{{ query }}">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Books List</title>
+</head>
+<body>
+    <h1>Liste des livres</h1>
 
-    <select name="auteur">
-        <option value="">Tous les auteurs</option>
-        {% for auteur in auteurs %}
-        <option value="{{ auteur.id }}" {% if auteur.id|stringformat:"s" == request.GET.auteur %}selected{% endif %}>
-            {{ auteur.nom }}
-        </option>
+    <!-- Formulaire de recherche et de filtres -->
+    <form method="GET">
+        <input type="text" name="q" placeholder="Rechercher un livre" value="{{ query }}">
+
+        <select name="auteur">
+            <option value="">Tous les auteurs</option>
+            {% for auteur in auteurs %}
+            <option value="{{ auteur.id }}" {% if auteur.id|stringformat:"s" == request.GET.auteur %}selected{% endif %}>
+                {{ auteur.nom }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <input type="text" name="genre" placeholder="Genre" value="{{ request.GET.genre }}">
+
+        <select name="categorie">
+            <option value="">Toutes les catégories</option>
+            {% for categorie in categories %}
+            <option value="{{ categorie.id }}" {% if categorie.id|stringformat:"s" == request.GET.categorie %}selected{% endif %}>
+                {{ categorie.nom }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Appliquer</button>
+    </form>
+
+    <!-- Liste des livres -->
+    <ul>
+        {% for book in books %}
+        <li>
+            <h2>{{ book.titre }}</h2>
+            <p><strong>Auteur :</strong> {{ book.auteur.nom }}</p>
+            <p><strong>Description :</strong> {{ book.description }}</p>
+            <p><strong>Genre :</strong> {{ book.genre }}</p>
+            <p><strong>Catégorie :</strong> {{ book.categorie.nom }}</p>
+            <img src="{{ book.cover_image_url }}" alt="Image de couverture" width="100">
+        </li>
+        {% empty %}
+        <li>Aucun livre trouvé.</li>
         {% endfor %}
-    </select>
-
-    <input type="text" name="genre" placeholder="Genre" value="{{ request.GET.genre }}">
-
-    <select name="categorie">
-        <option value="">Toutes les catégories</option>
-        {% for categorie in categories %}
-        <option value="{{ categorie.id }}" {% if categorie.id|stringformat:"s" == request.GET.categorie %}selected{% endif %}>
-            {{ categorie.nom }}
-        </option>
-        {% endfor %}
-    </select>
-
-    <button type="submit">Appliquer</button>
-</form>
-
-<ul>
-    {% for book in books %}
-    <li>{{ book.titre }} - {{ book.auteur.nom }} - {{ book.categorie.nom }}</li>
-    {% empty %}
-    <li>Aucun livre trouvé.</li>
-    {% endfor %}
-</ul>
+    </ul>
+</body>
+</html>

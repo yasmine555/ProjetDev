@@ -53,12 +53,13 @@ class Category(models.Model):
 
 class Book(models.Model):
     titre = models.CharField(max_length=100)
-    auteur = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='livres')
+    auteur = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='livres')  # Relation FK avec Author
     genre = models.CharField(max_length=50)
     prix = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField()
     note = models.IntegerField()
-    categorie = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='livres')
+    categorie = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='livres')  # Relation FK avec Category
+    cover_image_url = models.URLField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.titre
