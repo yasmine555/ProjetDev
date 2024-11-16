@@ -69,14 +69,14 @@ class Book(models.Model):
 
     def AjouterCommentaire(self, utilisateur, texte):
         # Add comment functions
-        Commentaire.objects.create(utilisateur=utilisateur, livre=self, texte=texte)
+        Review.objects.create(utilisateur=utilisateur, livre=self, texte=texte)
 
 
 class Commande(models.Model):
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='commandes')
     DateCommande = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20)
-    livres = models.ManyToManyField(Livre, related_name='commandes')
+    Livres = models.ManyToManyField(Book, related_name='commandes')
 
     def Afficherdetails(self):
         # Show order functions
@@ -89,7 +89,7 @@ class Commande(models.Model):
 
 class Panier(models.Model):
     utilisateur = models.OneToOneField(Utilisateur, on_delete=models.CASCADE, related_name='panier')
-    livres = models.ManyToManyField(Livre, related_name='paniers')
+    livres = models.ManyToManyField(Book, related_name='paniers')
 
     def AjouterLivre(self, livre):
         self.livres.add(livre)
@@ -102,9 +102,9 @@ class Panier(models.Model):
         pass
 
 
-class Commentaire(models.Model):
+class Review(models.Model):
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='commentaires')
-    livre = models.ForeignKey(Livre, on_delete=models.CASCADE, related_name='commentaires')
+    livre = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='commentaires')
     texte = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
 

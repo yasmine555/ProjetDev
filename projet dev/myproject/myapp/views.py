@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Author, Book, Review, Post, Commande
+from .models import Author, Book, Review, Category, Commande
 from django.contrib.auth.decorators import login_required
 
 # Home Page View
@@ -67,22 +67,22 @@ def create_review(request, book_id):
     return render(request, 'create_review.html', {'book': book})
 
 # Post List View
-def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'post_list.html', {'posts': posts})
+#def post_list(request):
+    #posts = Post.objects.all()
+    #return render(request, 'post_list.html', {'posts': posts})
 
 # Post Detail View
-def post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    return render(request, 'post_detail.html', {'post': post})
+#def post_detail(request, post_id):
+    #post = get_object_or_404(Post, id=post_id)
+    #return render(request, 'post_detail.html', {'post': post})
 
 # Create a Post View
-@login_required
-def create_post(request):
-    if request.method == "POST":
-        title = request.POST.get('title')
-        content = request.POST.get('content')
-        post = Post(user=request.user, title=title, content=content)
-        post.save()
-        return redirect('post_list')
-    return render(request, 'create_post.html')
+#@login_required
+#def create_post(request):
+    #if request.method == "POST":
+        #title = request.POST.get('title')
+        #content = request.POST.get('content')
+        #post = Post(user=request.user, title=title, content=content)
+        #post.save()
+        #return redirect('post_list')
+    #return render(request, 'create_post.html')
