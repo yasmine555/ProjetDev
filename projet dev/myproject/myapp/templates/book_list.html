@@ -1,0 +1,34 @@
+<!-- book_list.html -->
+<form method="GET">
+    <input type="text" name="q" placeholder="Rechercher un livre" value="{{ query }}">
+
+    <select name="auteur">
+        <option value="">Tous les auteurs</option>
+        {% for auteur in auteurs %}
+        <option value="{{ auteur.id }}" {% if auteur.id|stringformat:"s" == request.GET.auteur %}selected{% endif %}>
+            {{ auteur.nom }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <input type="text" name="genre" placeholder="Genre" value="{{ request.GET.genre }}">
+
+    <select name="categorie">
+        <option value="">Toutes les catégories</option>
+        {% for categorie in categories %}
+        <option value="{{ categorie.id }}" {% if categorie.id|stringformat:"s" == request.GET.categorie %}selected{% endif %}>
+            {{ categorie.nom }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Appliquer</button>
+</form>
+
+<ul>
+    {% for book in books %}
+    <li>{{ book.titre }} - {{ book.auteur.nom }} - {{ book.categorie.nom }}</li>
+    {% empty %}
+    <li>Aucun livre trouvé.</li>
+    {% endfor %}
+</ul>
