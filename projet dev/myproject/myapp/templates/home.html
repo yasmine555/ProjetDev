@@ -20,6 +20,26 @@
     <button type="submit">Rechercher</button>
 </form>
 
+<!-- Affichage des livres tendance -->
+<h1>Trending Books</h1>
+{% for book in trending_books %}
+    <div>{{ book.title }}</div>
+{% endfor %}
+
+<h2>Books from Google API</h2>
+{% for book in books_data %}
+    <div>{{ book.title }}</div>
+{% endfor %}
+
+<!-- Affichage des livres récupérés depuis l'API -->
+<h2>Books fetched from API</h2>
+<ul>
+    {% for book in books_data %}
+        <li>{{ book.title }} - {{ book.author_name }}</li>
+    {% endfor %}
+</ul>
+
+<!-- Liste des livres filtrés par la recherche -->
 <ul>
     {% for book in books %}
     <li>{{ book.title }} - {{ book.author.name }} ({{ book.category.name }})</li>

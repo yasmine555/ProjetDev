@@ -5,8 +5,12 @@ import requests
 
 # Home Page View
 def home(request):
-    trending_books = Book.objects.all()[:5]  
-    return render(request, 'home.html', {'trending_books': trending_books})
+    trending_books = Book.objects.all()[:5]  # Récupère les 5 premiers livres
+    books_data = fetch_books_from_api()  # Appelle la fonction pour récupérer les livres de l'API
+    print(books_data)  # Affiche les données dans la console
+
+    return render(request, 'home.html', {'trending_books': trending_books, 'books_data': books_data})
+
 
 def fetch_books_from_api():
     api_url = 'https://www.googleapis.com/books/v1/volumes?q=python+programming'
@@ -16,36 +20,58 @@ def fetch_books_from_api():
         data = response.json()
         books = data.get('items', [])
 
+        print(books)  # Affiche les livres récupérés pour le débogage
+
+        # Ensuite, tu peux enregistrer les livres dans la base de données
         for book_data in books:
             volume_info = book_data.get('volumeInfo', {})
 
-            # Récupération des données de l'API
-            title = volume_info.get('title', 'Titre inconnu')
-            author_name = ', '.join(volume_info.get('authors', ['Auteur inconnu']))
-            description = volume_info.get('description', 'Pas de description')
-            cover_image_url = volume_info.get('imageLinks', {}).get('thumbnail', '')
-            genre = ', '.join(volume_info.get('categories', ['Genre inconnu']))
+            # Vérifie si 'authors' existe et si les données sont valides
+            authors = volume_info.get('authors', ['Auteur inconnu'])
+            author_name = ', '.join(authors) if authors != ['Auteur inconnu'] else 'Auteur inconnu'  # Valeur par défaut
+
+            # Gère les valeurs manquantes pour nom et prénom
+            prenom = ''  # Valeur par défaut si 'prenom' est manquant
+            nom = author_name if author_name != 'Auteur inconnu' else 'Nom inconnu'  # Assure-toi d'avoir un nom valide
 
             # Création ou récupération de l'auteur
             author, created = Author.objects.get_or_create(
-                nom=author_name,
-                defaults={'prenom': '', 'datenaissance': None, 'origine': '', 'biographie': 'N/A'}
+                nom=nom,
+                defaults={
+                    'prenom': prenom,
+                    'datenaissance': None,  # Valeur par défaut pour la date de naissance
+                    'origine': '',
+                    'biographie': 'N/A'
+                }
             )
+
+            # Récupère les autres informations du livre
+            title = volume_info.get('title', 'Titre inconnu')
+            description = volume_info.get('description', 'Pas de description')
+            cover_image_url = volume_info.get('imageLinks', {}).get('thumbnail', '')
+            genre = ', '.join(volume_info.get('categories', ['Genre inconnu']))
 
             # Création ou récupération de la catégorie
             category, created = Category.objects.get_or_create(nom=genre)
 
             # Ajout du livre à la base de données
             Book.objects.create(
-                titre=title,
-                auteur=author,
+                title=title,
+                author=author,
                 genre=genre,
-                prix=0.00,  # Par défaut
+                prix=0.00,  # Valeur par défaut
                 description=description,
                 note=0,  # À adapter si l’API fournit des notes
                 categorie=category,
-                cover_image_url=cover_image_url
+                cover_image=cover_image_url
             )
+
+        return books  # Retourne les livres récupérés
+
+    else:
+        print("Erreur de récupération des données :", response.status_code)
+        return []
+
 
 # Book List View
 def book_list(request):
@@ -96,6 +122,26 @@ def author_detail(request, author_id):
     return render(request, 'author_detail.html', {'author': author, 'books': books_by_author})
 
 
+def save_books_to_db(books_data):
+    for book_data in books_data:
+        # Création ou récupération de l'auteur
+        author, created = Author.objects.get_or_create(
+            nom=book_data.get('author_name'),  # Adapté à la structure de l'API
+        )
+
+        # Création du livre
+        Book.objects.create(
+            title=book_data.get('title'),
+            author=author,
+            genre=book_data.get('genre'),
+            cover_image=book_data.get('cover_image')
+        )
+
+
+# Appeler cette fonction après avoir récupéré les données
+books_data = fetch_books_from_api()
+if books_data:
+    save_books_to_db(books_data)
 
 
 # Create a Review View

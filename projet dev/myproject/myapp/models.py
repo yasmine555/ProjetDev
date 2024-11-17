@@ -5,7 +5,7 @@ class Utilisateur(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nom = models.CharField(max_length=100)
     adresse = models.CharField(max_length=255)
-    mot_de_passe = models.CharField(max_length=100)
+
 
     def inscrire(self):
         #INSCRIRE function
@@ -34,12 +34,15 @@ class Utilisateur(models.Model):
 
 class Author(models.Model):
     nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
-    datenaissance = models.DateField()
-    origine = models.CharField(max_length=100)
-    biographie = models.TextField()
+    prenom = models.CharField(max_length=100, blank=True, null=True)
+    datenaissance = models.DateField(blank=True, null=True)
+    origine = models.CharField(max_length=100, blank=True, null=True)
+    biographie = models.TextField(blank=True, default='N/A')
 
-    def AfficherInfoAuteur(self):
+    def __str__(self):
+        return f"{self.nom} {self.prenom}"
+
+    def afficherInfoAuteur(self):
         # afficher info function
         pass
 
@@ -52,17 +55,17 @@ class Category(models.Model):
 
 
 class Book(models.Model):
-    titre = models.CharField(max_length=100)
-    auteur = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='livres')  # Relation FK avec Author
+    title = models.CharField(max_length=100)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='livres')  # Relation FK avec Author
     genre = models.CharField(max_length=50)
     prix = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField()
     note = models.IntegerField()
     categorie = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='livres')  # Relation FK avec Category
-    cover_image_url = models.URLField(max_length=200, blank=True, null=True)
+    cover_image = models.URLField(max_length=200, blank=True, null=True)
 
     def __str__(self):
-        return self.titre
+        return self.title
 
     def ConsulterDetails(self):
         # Consult book functions 
